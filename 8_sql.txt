@@ -1,0 +1,60 @@
+1) Create / switch database
+use college
+
+2) Insert records (CRUD – Create)
+insertOne()
+db.student.insertOne({roll:101, name:"Sarang", dept:"CSE", marks:85})
+
+insertMany()
+db.student.insertMany([
+  {roll:102, name:"Amit", dept:"IT", marks:90},
+  {roll:103, name:"Neha", dept:"ENTC", marks:75},
+  {roll:104, name:"Riya", dept:"CSE", marks:60}
+])
+
+3) Display records (CRUD – Read)
+db.student.find()
+
+
+Pretty format:
+
+db.student.find().pretty()
+
+4) Use logical operators
+find students from CSE department OR marks > 80:
+db.student.find({ $or:[ {dept:"CSE"}, {marks:{$gt:80}} ] })
+
+AND operator
+db.student.find({ dept:"CSE", marks:{$gt:70} })
+
+5) Update records (CRUD – Update)
+db.student.updateOne(
+   {roll:104},
+   {$set:{marks:68}}
+)
+
+6) SAVE method
+
+save() inserts if not exists, updates if exists.
+
+db.student.save({roll:103, name:"Neha", dept:"ENTC", marks:78})
+
+
+(Here roll=103 exists → so it will update)
+
+7) Delete record (CRUD – Delete)
+db.student.deleteOne({roll:102})
+
+8) Drop collection
+db.student.drop()
+
+
+////////////////////////////////////////////////////////////
+use college
+db.student.insertOne({roll:1,name:"spj",dept:"cse",marks:85})
+db.student.insertMany([{roll:2,name:"rohit",dept:"cse",marks:88},
+{roll:3,name:"pratham",dept:"entc",marks:90}])
+db.student.updateOne({roll:2},{$set:{marks:78}})
+db.student.find({dept:"cse",marks:{$gt:80}})
+db.student.deleteOne({roll:1})
+db.student.find().pretty() 

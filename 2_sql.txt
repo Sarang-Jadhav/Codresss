@@ -1,0 +1,70 @@
+-- 1) Create table with constraints
+CREATE TABLE Students(
+    stud_id NUMBER PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    dept VARCHAR(30),
+    age NUMBER CHECK(age > 0),
+    email VARCHAR(60) UNIQUE
+);
+
+-- 2) Create another table (for foreign key)
+CREATE TABLE Departments(
+    dept_id NUMBER PRIMARY KEY,
+    dept_name VARCHAR(40) UNIQUE
+);
+
+ALTER TABLE Students
+ADD CONSTRAINT fk_dept FOREIGN KEY(dept) REFERENCES Departments(dept_name);
+
+-- 3) Create INDEX
+CREATE INDEX idx_stud_name ON Students(name);
+
+-- 4) Create SEQUENCE (Oracle style)
+CREATE SEQUENCE stud_seq START WITH 1 INCREMENT BY 1;
+
+-- 5) Create VIEW
+CREATE VIEW student_view AS
+SELECT stud_id, name, dept FROM Students;
+
+-- 6) Create SYNONYM (Oracle)
+CREATE SYNONYM stu FOR Students;
+
+
+-- Insert queries (using sequence for id)
+INSERT INTO Departments VALUES(1,'CSE');
+INSERT INTO Departments VALUES(2,'IT');
+
+INSERT INTO Students VALUES(stud_seq.NEXTVAL,'Amit','CSE',21,'amit@gmail.com');
+INSERT INTO Students VALUES(stud_seq.NEXTVAL,'Riya','IT',20,'riya@gmail.com');
+INSERT INTO Students VALUES(stud_seq.NEXTVAL,'Sam','CSE',22,'sam@gmail.com');
+
+-- 10 DML Queries
+-- 1) Display all students
+SELECT * FROM Students;
+
+-- 2) List only CSE students
+SELECT * FROM Students WHERE dept='CSE';
+
+-- 3) Sort students by name
+SELECT * FROM Students ORDER BY name;
+
+-- 4) Count students in each department
+SELECT dept, COUNT(*) FROM Students GROUP BY dept;
+
+-- 5) Find students age > 21
+SELECT name FROM Students WHERE age > 21;
+
+-- 6) Update email of a student
+UPDATE Students SET email='sam_new@gmail.com' WHERE name='Sam';
+
+-- 7) Delete IT department student
+DELETE FROM Students WHERE dept='IT';
+
+-- 8) Insert using synonym
+INSERT INTO stu VALUES(stud_seq.NEXTVAL,'Neha','CSE',19,'neha@gmail.com');
+
+-- 9) Display using view
+SELECT * FROM student_view;
+
+-- 10) Display distinct departments
+SELECT DISTINCT dept FROM Students;

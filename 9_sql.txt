@@ -1,0 +1,104 @@
+tep 1 : Select / Create Database
+use college
+
+Step 2 : Insert sample records
+db.student.insertMany([
+ {roll:101, name:"Sarang", dept:"CSE", marks:85},
+ {roll:102, name:"Amit",   dept:"IT",  marks:90},
+ {roll:103, name:"Neha",   dept:"ENTC",marks:75},
+ {roll:104, name:"Riya",   dept:"CSE", marks:60},
+ {roll:105, name:"Jay",    dept:"IT",  marks:82}
+])
+
+AGGREGATION
+Example 1 : Average marks department wise
+db.student.aggregate([
+  { $group:{ _id:"$dept", avgMarks:{ $avg:"$marks" } } }
+])
+
+Example 2 : Count students department wise
+db.student.aggregate([
+  { $group:{ _id:"$dept", totalStudents:{ $sum:1 } } }
+])
+
+1) Maximum marks department wise
+db.student.aggregate([
+  { $group: { _id: "$dept", maxMarks: { $max: "$marks" } } }
+])
+
+
+Output idea:
+
+CSE → 85
+
+IT → 90
+
+ENTC → 75
+
+2) Minimum marks department wise
+db.student.aggregate([
+  { $group: { _id: "$dept", minMarks: { $min: "$marks" } } }
+])
+
+
+Output idea:
+
+CSE → 60
+
+IT → 82
+
+ENTC → 75
+
+3) Sort students by marks descending
+db.student.aggregate([
+  { $sort: { marks: -1 } }
+])
+
+
+Output idea:
+
+90 → Amit
+
+85 → Sarang
+
+82 → Jay
+
+75 → Neha
+
+60 → Riya
+
+4) Count students having marks > 80
+db.student.aggregate([
+  { $match: { marks: { $gt: 80 } } },
+  { $count: "highScorers" }
+])
+
+
+Output idea:
+
+highScorers: 3 (Sarang, Amit, Jay)
+
+5) Group by department and list student names
+db.student.aggregate([
+  { $group: { _id: "$dept", students: { $push: "$name" } } }
+])
+
+
+Output idea:
+
+CSE → [ "Sarang", "Riya" ]
+
+IT → [ "Amit", "Jay" ]
+
+ENTC → [ "Neha" ]
+
+
+INDEXING
+Create index on "dept" field
+db.student.createIndex({ dept:1 })
+
+View created indexes
+db.student.getIndexes()
+
+Drop index
+db.student.dropIndex({ dept:1 })

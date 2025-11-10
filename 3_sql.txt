@@ -1,0 +1,94 @@
+-- Create Students table
+CREATE TABLE Students (
+    StudentID INT PRIMARY KEY,
+    StudentName VARCHAR(50),
+    Age INT,
+    CourseID INT
+);
+
+-- Create Courses table
+CREATE TABLE Courses (
+    CourseID INT PRIMARY KEY,
+    CourseName VARCHAR(50),
+    Instructor VARCHAR(50)
+);
+
+-- Insert sample data into Students
+INSERT INTO Students (StudentID, StudentName, Age, CourseID) VALUES
+(1, 'Sarang', 20, 101),
+(2, 'Amit', 21, 102),
+(3, 'Neha', 22, 101),
+(4, 'Riya', 20, 103),
+(5, 'Vikram', 23, NULL);
+
+-- Insert sample data into Courses
+INSERT INTO Courses (CourseID, CourseName, Instructor) VALUES
+(101, 'Math', 'Mr. Sharma'),
+(102, 'Physics', 'Ms. Mehta'),
+(103, 'Chemistry', 'Dr. Rao'),
+(104, 'Biology', 'Dr. Singh');
+
+-- List students with their course names
+SELECT Students.StudentName, Courses.CourseName
+FROM Students
+INNER JOIN Courses
+ON Students.CourseID = Courses.CourseID;
+
+-- List all students and their courses (even if student has no course)
+SELECT Students.StudentName, Courses.CourseName
+FROM Students
+LEFT JOIN Courses
+ON Students.CourseID = Courses.CourseID;
+
+-- List all courses and the students enrolled (even if no student enrolled)
+SELECT Students.StudentName, Courses.CourseName
+FROM Students
+RIGHT JOIN Courses
+ON Students.CourseID = Courses.CourseID;
+
+
+-- List all students and all courses
+SELECT Students.StudentName, Courses.CourseName
+FROM Students
+FULL OUTER JOIN Courses
+ON Students.CourseID = Courses.CourseID;
+
+-- Cartesian product of students and courses
+SELECT Students.StudentName, Courses.CourseName
+FROM Students
+CROSS JOIN Courses;
+
+-- Find pairs of students in the same course
+SELECT A.StudentName AS Student1, B.StudentName AS Student2, A.CourseID
+FROM Students A
+INNER JOIN Students B
+ON A.CourseID = B.CourseID
+WHERE A.StudentID < B.StudentID;
+
+-- List students enrolled in 'Math' course using subquery
+SELECT StudentName
+FROM Students
+WHERE CourseID = (SELECT CourseID FROM Courses WHERE CourseName = 'Math');
+
+-- Show student name with course name using subquery
+SELECT StudentName,
+       (SELECT CourseName FROM Courses WHERE Courses.CourseID = Students.CourseID) AS CourseName
+FROM Students;
+
+-- Create a view for students with course details
+CREATE VIEW StudentCourses AS
+SELECT Students.StudentID, Students.StudentName, Courses.CourseName, Courses.Instructor
+FROM Students
+LEFT JOIN Courses ON Students.CourseID = Courses.CourseID;
+-- Query the view
+SELECT * FROM StudentCourses;
+
+-- Update CourseID for student 'Vikram' to 'Physics'
+UPDATE Students
+SET CourseID = (SELECT CourseID FROM Courses WHERE CourseName = 'Physics')
+WHERE StudentName = 'Vikram';
+
+-- Delete students enrolled in 'Chemistry'
+DELETE FROM Students
+WHERE CourseID = (SELECT CourseID FROM Courses WHERE CourseName = 'Chemistry');
+

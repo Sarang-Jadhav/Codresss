@@ -1,0 +1,40 @@
+CREATE TABLE Library(
+    book_id NUMBER,
+    title VARCHAR2(50),
+    author VARCHAR2(50)
+);
+
+CREATE TABLE Library_Audit(
+    book_id NUMBER,
+    title VARCHAR2(50),
+    author VARCHAR2(50),
+    action_type VARCHAR2(10),
+    action_date DATE
+);
+INSERT INTO Library VALUES(1,'Old Title','Author1');
+INSERT INTO Library VALUES(2,'Book2','Author2');
+
+CREATE OR REPLACE TRIGGER trg_library_audit
+AFTER UPDATE OR DELETE ON Library
+FOR EACH ROW
+BEGIN
+    IF UPDATING THEN
+        INSERT INTO Library_Audit(book_id, title, author, action_type, action_date)
+        VALUES(:OLD.book_id, :OLD.title, :OLD.author, 'UPDATE', SYSDATE);
+    ELSIF DELETING THEN
+        INSERT INTO Library_Audit(book_id, title, author, action_type, action_date)
+        VALUES(:OLD.book_id, :OLD.title, :OLD.author, 'DELETE', SYSDATE);
+    END IF;
+END;
+/
+
+
+--Test example (optional for lab)
+
+UPDATE Library SET title='New Title' WHERE book_id=1;
+DELETE FROM Library WHERE book_id=2;
+
+SELECT * FROM Library_Audit;
+SELECT * FROM Library;
+
+

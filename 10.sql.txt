@@ -1,0 +1,39 @@
+Step 1 : Select / Create Database
+use college
+
+Step 2 : Insert sample records
+db.student.insertMany([
+ {dept:"CSE",  marks:85},
+ {dept:"IT",   marks:90},
+ {dept:"ENTC", marks:75},
+ {dept:"CSE",  marks:60},
+ {dept:"IT",   marks:82}
+])
+
+Step 3 : Define MAP function
+
+Map function emits each department with its marks.
+
+var mapFunction = function() {
+    emit(this.dept, this.marks);
+}
+
+Step 4 : Define REDUCE function
+
+Reduce function collects all marks of same dept and calculates average.
+
+var reduceFunction = function(key, values) {
+    var total = 0;
+    for(var i=0;i<values.length;i++) total += values[i];
+    return total / values.length;
+}
+
+Step 5 : Execute MapReduce
+db.student.mapReduce(
+    mapFunction,
+    reduceFunction,
+    { out:"deptAvgMarks" }
+)
+
+Step 6 : Display Result
+db.deptAvgMarks.find().pretty()

@@ -1,0 +1,56 @@
+CREATE TABLE O_RollCall(
+    roll NUMBER,
+    name VARCHAR2(30)
+);
+
+CREATE TABLE N_RollCall(
+    roll NUMBER,
+    name VARCHAR2(30)
+);
+
+
+INSERT INTO O_RollCall VALUES(1,'Amit');
+INSERT INTO O_RollCall VALUES(2,'Sneha');
+
+INSERT INTO N_RollCall VALUES(2,'Sneha'); -- duplicate
+INSERT INTO N_RollCall VALUES(3,'Rahul'); -- new
+INSERT INTO N_RollCall VALUES(4,'Kiran'); -- new
+
+COMMIT;
+
+
+
+--Parameterized Cursor PL/SQL Code:
+
+DECLARE
+    CURSOR c_new(p_roll NUMBER) IS 
+        SELECT roll, name FROM N_RollCall WHERE roll = p_roll;
+
+    v_roll N_RollCall.roll%TYPE;
+    v_name N_RollCall.name%TYPE;
+
+    v_cnt NUMBER;
+BEGIN
+    FOR rec IN (SELECT roll FROM N_RollCall) LOOP
+        
+        OPEN c_new(rec.roll);
+        FETCH c_new INTO v_roll, v_name;
+        CLOSE c_new;
+
+        SELECT COUNT(*) INTO v_cnt 
+        FROM O_RollCall 
+        WHERE roll = v_roll;
+
+        IF v_cnt = 0 THEN
+            INSERT INTO O_RollCall VALUES(v_roll, v_name);
+            DBMS_OUTPUT.PUT_LINE('Inserted: '||v_roll||' '||v_name);
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Skipped duplicate: '||v_roll);
+        END IF;
+
+    END LOOP;
+END;
+/
+
+select * from O_RollCall;
+select * from N_RollCall;
